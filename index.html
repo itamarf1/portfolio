@@ -116,6 +116,7 @@ button.tile:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 14px 0 -
 .tech span{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--ink-2)}
 .stage{display:grid;gap:12px;align-content:start;min-width:0}
 .flowbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+#p-tabs[hidden]{display:none}
 .tabs{display:inline-flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
 .tabs button{border:0;background:transparent;padding:6px 16px;font-size:14px;font-weight:600}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
@@ -129,28 +130,33 @@ button.tile:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 14px 0 -
   .stage{order:-1}
 }
 
-/* Flow */
-.flow{display:flex;flex-wrap:wrap;gap:10px 34px;list-style:none;margin:0;padding:0;counter-reset:n}
-.flow li{position:relative;flex:1 1 118px;counter-increment:n}
-.flow li:not(:last-child)::after{content:"";position:absolute;right:-30px;top:50%;width:22px;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 12px);background-size:24px 3px;animation:march .7s linear infinite}
-.flow li:not(:last-child)::before{content:"";position:absolute;right:-36px;top:50%;margin-top:-4px;border:5px solid transparent;border-left-color:var(--accent)}
-.node{width:100%;height:100%;min-height:56px;text-align:left;border:2px solid var(--line);border-radius:12px;background:var(--paper);padding:7px 10px;font-weight:600;font-size:14px;line-height:1.2;transition:background .2s,color .2s,transform .2s,border-color .2s}
-.node::before{content:counter(n,decimal-leading-zero);display:block;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-2)}
-.node:hover{border-color:var(--ink)}
-.node.done{border-color:var(--ok)}
-.node.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);transform:translateY(-3px) scale(1.03)}
-.node.on::before{color:inherit}
-.flow.before .node{border-style:dashed}
-.callout{border-radius:12px;padding:8px 12px;background:var(--paper);border-left:5px solid var(--accent);font-size:14.5px;min-height:58px}
+/* Architecture diagram */
+.archwrap{border-radius:14px;border:2px solid var(--line);background:var(--paper);padding:12px;display:grid;gap:10px;min-width:0}
+.archwrap .flowbar .mono{color:var(--ink-2)}
+.archscroll{overflow-x:auto}
+.arch{width:100%;height:auto;display:block;margin:0 auto}
+.anode{cursor:pointer;outline:none}
+.anode rect{fill:var(--sheet);stroke:var(--line);stroke-width:2;transition:fill .2s,stroke .2s}
+.anode.k-ext rect{stroke-dasharray:6 4}
+.anode:hover rect,.anode:focus-visible rect,.anode.hot rect{stroke:var(--accent)}
+.anode.sel rect{fill:var(--accent);stroke:var(--accent)}
+.nt{font:600 13px var(--body);fill:var(--ink)}
+.ns{font:10.5px var(--mono);fill:var(--ink-2)}
+.anode.sel .nt,.anode.sel .ns{fill:var(--accent-ink)}
+.ki *{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ki .lam{fill:var(--accent);stroke:none;font:700 21px var(--body)}
+.anode.sel .ki *{stroke:var(--accent-ink)}
+.anode.sel .ki .lam{fill:var(--accent-ink);stroke:none}
+.edge{fill:none;stroke:var(--accent);stroke-width:2;opacity:.5;transition:opacity .2s,stroke-width .2s}
+.edge.dash{stroke-dasharray:5 5}
+.arch.dimmed .edge{opacity:.16}
+.arch.dimmed .pk{opacity:.25}
+.arch .edge.hot{opacity:1;stroke-width:3.5}
+.ahm,.pk{fill:var(--accent)}
+.elab{font:10.5px var(--mono);fill:var(--ink-2);paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+.callout{border-radius:12px;padding:8px 12px;background:var(--sheet);border-left:5px solid var(--accent);font-size:14.5px;min-height:58px}
 .callout p{margin:2px 0 0}
 .callout .mono{color:var(--ink-2)}
-@media (max-width:560px){
-  .flow{flex-direction:column;gap:24px}
-  .flow li{flex:none}
-  .flow li:not(:last-child)::after{right:auto;left:18px;top:auto;bottom:-19px;width:3px;height:13px;background:repeating-linear-gradient(180deg,var(--accent) 0 5px,transparent 5px 9px);background-size:3px 18px;animation-name:marchY}
-  .flow li:not(:last-child)::before{right:auto;left:14.5px;top:auto;bottom:-26px;margin:0;border-left-color:transparent;border-top-color:var(--accent)}
-  .node{min-height:0}
-}
 
 /* Scenes */
 .scene{position:relative;border-radius:14px;background:var(--paper);border:2px solid var(--line);padding:14px;min-height:200px;overflow:hidden;display:flex;flex-direction:column;gap:12px;justify-content:center}
@@ -227,7 +233,8 @@ button.tile:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 14px 0 -
 @media (max-width:560px){#agent{right:0;bottom:0;width:100%;height:80%;border-width:3px 0 0;border-radius:18px 18px 0 0}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
-  .node.on,.ph.done,.ucard.on{transform:none}
+  .ph.done,.ucard.on{transform:none}
+  .pk{display:none}
 }
 </style>
 </head>
@@ -253,10 +260,13 @@ button.tile:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 14px 0 -
     <div class="pbody">
       <div class="side" id="p-side"></div>
       <div class="stage">
-        <div class="flowbar"><div id="p-tabs"></div><button class="btn" type="button" id="run">▶ Run the flow</button></div>
+        <div id="p-tabs"></div>
         <div class="scene" id="scene"></div>
-        <ol class="flow" id="flow"></ol>
-        <div class="callout" id="callout"></div>
+        <div class="archwrap">
+          <div class="flowbar"><span class="mono">Architecture</span><button class="btn" type="button" id="run">▶ Run the flow</button></div>
+          <div class="archscroll" id="arch"></div>
+          <div class="callout" id="callout"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -480,38 +490,162 @@ button.tile:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 14px 0 -
       var tabs=el("div","tabs"); tabs.setAttribute("role","tablist");
       p.flows.forEach(function(f,i){
         var t=el("button",null,f.label); t.type="button"; t.setAttribute("role","tab"); t.dataset.i=i;
-        t.onclick=function(){ stopRun(); state.flowIdx=i; state.node=0; drawFlow(); drawScene(); };
+        t.onclick=function(){ state.flowIdx=i; markTabs(); drawScene(); };
         tabs.appendChild(t);
       });
       tb.appendChild(tabs);
     }
-    drawFlow(); drawScene();
+    $("p-tabs").hidden=p.flows.length<2;
+    markTabs(); drawArch(); drawScene();
     document.querySelector(".pbody").scrollTop=0;
   }
-  function drawFlow(){
-    var p=byId(state.current), f=p.flows[state.flowIdx], ol=$("flow");
-    ol.textContent=""; ol.className="flow"+(f.label==="Before"?" before":"");
-    document.querySelectorAll(".tabs button").forEach(function(t){ t.setAttribute("aria-selected", String(Number(t.dataset.i)===state.flowIdx)); });
-    f.nodes.forEach(function(n,i){
-      var li=el("li"), b=el("button","node",n.t); b.type="button";
-      b.onclick=function(){ stopRun(); state.node=i; markNodes(false); };
-      li.appendChild(b); ol.appendChild(li);
+  /* ---------- architecture diagrams ---------- */
+  /* node: [id, kind, title, sub, col, row, description]   edge: [from, to, {dash, both, l}] */
+  var ARCH={
+    1:{n:[
+      ["req","user","Training job","anyone can run",0,0,"Anyone on the team can start a training job. Before, only the CTO could, by hand."],
+      ["pre","svc","Preprocessing","AWS Batch",1,0,"First stage. Prepares the raw training data on its own compute."],
+      ["proc","svc","Processing","AWS Batch",2,0,"Second stage. Scales independently of the other two."],
+      ["train","svc","Training","AWS Batch",3,0,"Third stage. Trains the model on right-sized machines."],
+      ["model","store","Trained model","minutes, not days",4,0,"Turnaround dropped from days to minutes, at 100x+ the daily capacity."],
+      ["state","db","Job state","SQS + MySQL",2,1,"Every stage reports progress, so a failed job is visible and can be retried."],
+      ["bo","db","Back-office","OpenSearch",4,1,"Runs are indexed so the team can search and inspect them interactively."]],
+     e:[["req","pre"],["pre","proc"],["proc","train"],["train","model"],["pre","state",{dash:1}],["proc","state",{dash:1}],["train","state",{dash:1}],["state","bo"]]},
+    2:{n:[
+      ["app","client","Desktop app","wants a preview",0,0,"The photographer asks to see the AI edit before committing a whole catalog."],
+      ["web","svc","Orchestrator","web server",1,0,"Splits a full catalog into small subsets and fans them out. A sample of 3 to 10 images goes straight through."],
+      ["wrk","svc","Preview worker","Kubernetes",2,0,"Stateless. Downloads a subset, downscales it and runs the AI editing model. It never knows the catalog size."],
+      ["out","store","Preview files","cloud storage",3,0,"Downsampled previews are stored behind presigned URLs."],
+      ["app2","client","Preview shown","within seconds",4,0,"The app is notified and downloads the previews. If no notification arrives, it long-polls for status."],
+      ["src","store","Source images","sample / catalog",2,1,"Either a fresh sample upload, or a catalog already in cloud storage from culling."],
+      ["chk","svc","Completeness","full catalogs",3,1,"Confirms every image got a preview. If any failed, previews are not shown at all."]],
+     e:[["app","web"],["web","wrk",{l:"subsets"}],["src","wrk"],["wrk","out"],["out","app2",{l:"notify"}],["out","chk"],["chk","app2"]]},
+    3:{n:[
+      ["u","user","Photographer","preset + answers",0,0,"Uploads a preset file and answers a short image questionnaire."],
+      ["api","svc","Web server","upload, quiz APIs",1,0,"Validates the preset, serves the questionnaire images and collects the selections."],
+      ["fn","fn","Parameter calc","AWS Lambda",2,0,"Turns the questionnaire selections into this user's editing parameters."],
+      ["db","db","Profile data","MongoDB",3,0,"Stores the parameters and the preset's key settings. NoSQL suits the unstructured preset format."],
+      ["ed","svc","Editing service","one shared model",4,0,"Loads the user's parameters and preset and injects them into a single base model shared by everyone."],
+      ["st","store","Preset file","cloud storage",2,1,"The original preset file is kept in cloud storage."]],
+     e:[["u","api"],["api","fn",{l:"answers"}],["fn","db"],["db","ed"],["api","st"],["st","ed"]]},
+    4:{n:[
+      ["app","client","Desktop app","pick highlights",0,0,"The photographer selects images and names the gallery. High-resolution files were already uploaded up front."],
+      ["web","svc","Orchestrator","web server",1,0,"Creates an empty gallery on the partner platform, coupled to a gallery object on our side, then splits the work into batches."],
+      ["rnd","svc","Render workers","parallel batches",2,0,"Each batch applies the saved edit (a JSON file) to the full-resolution image."],
+      ["q","queue","Done events","SQS",3,0,"Every finished batch emits an event."],
+      ["h","svc","State handler","tracks each batch",4,0,"Checks state on every event, tells the partner what is ready, and records the partner's success or failure callback."],
+      ["st","store","Artifacts","3 resolutions",2,1,"Low, medium and high resolution per image, as the partner's gallery needs."],
+      ["pt","ext","Partner gallery","pulls from us",4,1,"The partner downloads the images cloud to cloud and calls back when done. We never push heavy files."]],
+     e:[["app","web"],["web","rnd",{l:"batches"}],["rnd","st"],["rnd","q"],["q","h"],["h","pt",{both:1}],["st","pt",{l:"pull"}]]},
+    5:{n:[
+      ["ord","queue","Ordering system","Kafka · RabbitMQ",0,0,"Every order is fanned out to the financial pipeline as an event with full details: amount, tip, tax."],
+      ["cfg","svc","Config service","splits into bills",1,0,"Loads the shop's terms and splits the order into separate bills: revenue share, discounts, base amount."],
+      ["mth","svc","Math service","stateless math",2,0,"Knows nothing about shops. Gets one bill and a formula, for example 10% plus 2 cents, and calculates."],
+      ["log","db","Fact log","append-only MySQL",3,0,"Each result is appended at the terms in force when the order happened. Nothing is recalculated later."],
+      ["dw","db","Warehouse","Redshift",4,0,"ETL moves the log to the warehouse."],
+      ["trm","db","Shop terms","MySQL",1,1,"Per-shop configuration. It can change mid-period without corrupting past records."],
+      ["pay","ext","Payout","sum of the log",4,1,"At period end the amount is a simple aggregation, paid through a third-party provider."]],
+     e:[["ord","cfg",{l:"order"}],["trm","cfg"],["cfg","mth",{l:"bill"}],["mth","log"],["log","dw",{l:"ETL"}],["dw","pay"]]},
+    6:{n:[
+      ["br","client","Browser","Vue + Astro",0,0,"The web app for real-estate photographers."],
+      ["up","svc","Parallel upload","multipart, 5x",1,0,"Files upload concurrently in parts instead of one after another."],
+      ["st","store","Cloud storage","originals",2,0,"Uploaded originals land here for editing."],
+      ["ai","svc","AI editing","takes minutes",3,0,"The edits still take a few minutes. The fix was to stop making users stare at nothing meanwhile."],
+      ["grid","client","Instant grid","from local files",0,1,"Photos render at once from the user's computer, marked as not edited yet."],
+      ["res","store","Finished edits","arrive gradually",3,1,"Edits become available one by one."]],
+     e:[["br","grid"],["br","up"],["up","st"],["st","ai"],["ai","res"],["res","grid",{l:"poll, load one by one"}]]},
+    7:{n:[
+      ["nb","svc","Nightly bake","Docker images",0,0,"Images of the whole stack are built every night, so every request starts from a warm base."],
+      ["bld","svc","Delta build","about 3 minutes",1,0,"Only the code that differs on the developer's branches is built."],
+      ["sbx","svc","Private sandbox","EC2, full stack",2,0,"Any set of services, each on its own branch, running together for one developer."],
+      ["out","svc","Traffic out","ALB + Route 53",3,0,"Gives the sandbox a public address."],
+      ["app","client","Developer's app","connects in",4,0,"The developer points their client app at their own sandbox."],
+      ["dev","user","Developer","repos + branches",0,1,"Picks which repositories and branches to run. One click."],
+      ["emu","queue","Queue emulator","local SQS / SNS",2,1,"Internal queue traffic stays inside the sandbox, routed by developer name. Nobody gets anyone else's messages."],
+      ["cc","ext","Claude Code","agentic layer",1,1,"An agentic layer lets the sandbox work with Claude Code and the team's other tooling."]],
+     e:[["nb","bld"],["dev","bld"],["bld","sbx"],["sbx","emu",{both:1}],["sbx","out"],["out","app",{both:1}],["cc","sbx"]]}
+  };
+  var KIND={
+    svc:'<path d="M11 1 20 6 20 16 11 21 2 16 2 6Z"/>',
+    queue:'<rect x="1" y="6" width="20" height="10" rx="5"/><path d="M8 6v10M14 6v10"/>',
+    db:'<ellipse cx="11" cy="5" rx="8" ry="3.5"/><path d="M3 5v12c0 2 3.6 3.5 8 3.5s8-1.5 8-3.5V5M3 11c0 2 3.6 3.5 8 3.5s8-1.5 8-3.5"/>',
+    store:'<path d="M2 5h18l-2.5 15h-13Z"/><path d="M6 10h10"/>',
+    fn:'<text x="4" y="19" class="lam">λ</text>',
+    client:'<rect x="2" y="3" width="18" height="13" rx="2"/><path d="M7 20h8M11 16v4"/>',
+    ext:'<circle cx="11" cy="11" r="9" stroke-dasharray="4 3"/><path d="M7 11h8M12 8l3 3-3 3"/>',
+    user:'<circle cx="11" cy="7" r="4"/><path d="M3 21c0-5 3.5-8 8-8s8 3 8 8"/>'
+  };
+  var mobQ=window.matchMedia("(max-width:700px)");
+  function drawArch(){
+    var a=ARCH[state.current], mob=mobQ.matches;
+    var CW=mob?170:198, CH=mob?94:108, NW=150, NH=58, PAD=6, pos={}, maxC=0, maxR=0;
+    a.n.forEach(function(n){ maxC=Math.max(maxC,n[4]); maxR=Math.max(maxR,n[5]); });
+    var cols=(mob?maxR:maxC)+1, rows=(mob?maxC:maxR)+1, W=cols*CW+PAD*2, H=rows*CH+PAD*2;
+    a.n.forEach(function(n){ var gc=mob?n[5]:n[4], gr=mob?n[4]:n[5]; pos[n[0]]={x:PAD+gc*CW+CW/2, y:PAD+gr*CH+CH/2, gc:gc, gr:gr}; });
+    var out='<svg class="arch" viewBox="0 0 '+W+' '+H+'" style="max-width:'+W+'px" role="img" aria-label="Architecture diagram">'+
+      '<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path class="ahm" d="M0 0L10 5L0 10z"/></marker></defs>';
+    var labels="";
+    a.e.forEach(function(e,i){
+      var s=pos[e[0]], t=pos[e[1]], o=e[2]||{}, gx=t.gc-s.gc, gy=t.gr-s.gr, x1,y1,x2,y2,d, G=3;
+      if(Math.abs(gx)>=Math.abs(gy) && gx!==0){
+        var sg=gx>0?1:-1; x1=s.x+sg*NW/2; y1=s.y; x2=t.x-sg*(NW/2+G); y2=t.y; var mx=(x1+x2)/2;
+        d="M"+x1+" "+y1+"C"+mx+" "+y1+" "+mx+" "+y2+" "+x2+" "+y2;
+      } else {
+        var sg2=gy>0?1:-1; x1=s.x; y1=s.y+sg2*NH/2; x2=t.x; y2=t.y-sg2*(NH/2+G); var my=(y1+y2)/2;
+        d="M"+x1+" "+y1+"C"+x1+" "+my+" "+x2+" "+my+" "+x2+" "+y2;
+      }
+      out+='<path class="edge'+(o.dash?" dash":"")+'" data-i="'+i+'" d="'+d+'" marker-end="url(#ah)"'+(o.both?' marker-start="url(#ah)"':'')+'/>';
+      out+='<circle class="pk" r="'+(o.dash?3:4)+'"><animateMotion dur="'+(o.dash?2.6:1.8)+'s" begin="-'+(i*0.27).toFixed(2)+'s" repeatCount="indefinite" path="'+d+'"/></circle>';
+      if(o.l) labels+='<text class="elab" text-anchor="middle" x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-7)+'">'+o.l+'</text>';
     });
-    markNodes(false);
+    out+=labels;
+    a.n.forEach(function(n){
+      var p=pos[n[0]];
+      out+='<g class="anode k-'+n[1]+'" data-id="'+n[0]+'" tabindex="0" role="button" transform="translate('+(p.x-NW/2)+','+(p.y-NH/2)+')">'+
+        '<rect width="'+NW+'" height="'+NH+'" rx="12"/><g class="ki" transform="translate(11,18)">'+KIND[n[1]]+'</g>'+
+        '<text class="nt" x="42" y="25">'+n[2]+'</text><text class="ns" x="42" y="42">'+n[3]+'</text></g>';
+    });
+    $("arch").innerHTML=out+"</svg>";
+    document.querySelectorAll("#arch .anode").forEach(function(g){
+      var pickNode=function(){ stopRun(); selectNode(g.dataset.id); };
+      g.onclick=pickNode; g.onkeydown=function(ev){ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); pickNode(); } };
+    });
+    hint();
   }
-  function markNodes(running){
-    var f=byId(state.current).flows[state.flowIdx];
-    document.querySelectorAll("#flow .node").forEach(function(b,i){ b.classList.toggle("on", i===state.node); b.classList.toggle("done", running && i<state.node); });
-    var n=f.nodes[state.node], co=$("callout"); co.textContent="";
-    co.appendChild(el("span","mono","Step "+pad(state.node+1)+" of "+pad(f.nodes.length)));
-    co.appendChild(el("p",null,n.d));
+  function hint(){
+    clearMarks(); var co=$("callout"); co.textContent="";
+    co.appendChild(el("span","mono","Architecture")); co.appendChild(el("p",null,"Tap any component to see what it does, or run the flow."));
+  }
+  function clearMarks(){
+    document.querySelectorAll("#arch .sel,#arch .hot").forEach(function(x){ x.classList.remove("sel","hot"); });
+    var sv=document.querySelector("#arch svg"); if(sv) sv.classList.remove("dimmed");
+  }
+  function say(label,node){
+    var co=$("callout"); co.textContent="";
+    co.appendChild(el("span","mono",label)); co.appendChild(el("p",null,node[6]));
+  }
+  function selectNode(id){
+    var a=ARCH[state.current], node=a.n.filter(function(n){ return n[0]===id; })[0]; if(!node) return;
+    clearMarks(); document.querySelector("#arch svg").classList.add("dimmed");
+    document.querySelector('#arch .anode[data-id="'+id+'"]').classList.add("sel");
+    a.e.forEach(function(e,i){ if(e[0]===id||e[1]===id) document.querySelector('#arch .edge[data-i="'+i+'"]').classList.add("hot"); });
+    say(node[2]+" · "+node[3], node);
+  }
+  function stepEdge(i){
+    var a=ARCH[state.current], e=a.e[i], node=a.n.filter(function(n){ return n[0]===e[1]; })[0];
+    clearMarks(); document.querySelector("#arch svg").classList.add("dimmed");
+    document.querySelector('#arch .edge[data-i="'+i+'"]').classList.add("hot");
+    document.querySelector('#arch .anode[data-id="'+e[0]+'"]').classList.add("hot");
+    document.querySelector('#arch .anode[data-id="'+e[1]+'"]').classList.add("sel");
+    say("Step "+pad(i+1)+" of "+pad(a.e.length)+" · "+node[2], node);
   }
   function runFlow(){
     if(!state.current) return;
-    var f=byId(state.current).flows[state.flowIdx];
-    state.node=0; markNodes(true); $("run").textContent="■ Stop";
-    state.timer=setInterval(function(){ if(state.node>=f.nodes.length-1){ stopRun(); return; } state.node++; markNodes(true); }, 1600);
+    var n=ARCH[state.current].e.length; state.node=0; stepEdge(0); $("run").textContent="■ Stop";
+    state.timer=setInterval(function(){ if(state.node>=n-1){ stopRun(); return; } state.node++; stepEdge(state.node); }, 1700);
   }
+  function markTabs(){ document.querySelectorAll(".tabs button").forEach(function(t){ t.setAttribute("aria-selected", String(Number(t.dataset.i)===state.flowIdx)); }); }
+  mobQ.addEventListener("change",function(){ if(state.current){ stopRun(); drawArch(); } });
   function stopRun(){ if(state.timer){ clearInterval(state.timer); state.timer=null; } $("run").textContent="▶ Run the flow"; }
   $("run").onclick=function(){ state.timer ? stopRun() : runFlow(); };
 
