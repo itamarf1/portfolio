@@ -396,7 +396,6 @@
       "6. You can operate the page. When it helps, end your reply with at most one tag on its own line:",
       "   [[open:N]] opens project N (1 to 7). Use it when the answer centers on one project.",
       "   [[run:N]] opens project N and plays its architecture flow. Use it when asked how something works or to show a flow.",
-      "   [[tech:NAME]] filters the project list by a technology. Valid names: " + allTech().join(", ") + ".",
       "",
       focus ? "NOTES (full detail for the projects most relevant to this question, brief for the rest; if the visitor needs detail on a brief one, answer from what is here and invite a follow-up question about it)" : "NOTES",
       knowledge(focus)
