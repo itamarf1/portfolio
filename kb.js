@@ -328,10 +328,33 @@
     "Company names, partner names and exact financial figures are deliberately left out of this site. If asked, say they are not published here and that Itamar can share details in conversation. Never guess them."
   ];
 
-  function knowledge() {
+  /* Projects most relevant to a question. Used server-side to keep the prompt small. */
+  function pick(text, max) {
+    var words = String(text || "").toLowerCase().match(/[a-z0-9]+/g) || [];
+    var scored = projects.map(function (p) {
+      var head = (p.title + " " + p.category + " " + p.tech.join(" ")).toLowerCase();
+      var body = (p.oneLine + " " + p.problem + " " + p.built + " " + (p.decision || "")).toLowerCase();
+      var s = 0;
+      words.forEach(function (w) {
+        if (w.length < 3) return;
+        if (head.indexOf(w) > -1) s += 3; else if (body.indexOf(w) > -1) s += 1;
+      });
+      if (new RegExp("(project|sheet)\\s*0?" + p.id + "\\b").test(String(text).toLowerCase())) s += 10;
+      return { id: p.id, s: s };
+    }).filter(function (x) { return x.s >= 2; }).sort(function (a, b) { return b.s - a.s; });
+    return scored.slice(0, max || 2).map(function (x) { return x.id; });
+  }
+
+  function knowledge(focus) {
     var out = [];
     out.push("ABOUT: " + profile.name + ". " + profile.intro);
     projects.forEach(function (p) {
+      if (focus && focus.indexOf(p.id) < 0) {
+        out.push("\nPROJECT " + p.id + " (brief): " + p.title + " (" + p.category + "). Role: " + p.role + ". " + p.oneLine +
+          " Impact: " + p.impact.map(function (i) { return i.n + " " + i.l; }).join("; ") + ". Technologies: " + p.tech.join(", ") + "." +
+          (p.decision ? " Key decision: " + p.decision : ""));
+        return;
+      }
       out.push(
         "\nPROJECT " + p.id + ": " + p.title + " (" + p.company + "; " + p.category + ")\n" +
         "Role: " + p.role + ".\n" +
@@ -360,7 +383,7 @@
     return list;
   }
 
-  function systemPrompt() {
+  function systemPrompt(focus) {
     return [
       "You are the portfolio agent on " + profile.name + "'s portfolio website. Visitors are recruiters, HR people and engineering managers.",
       "Answer questions about Itamar's work using only the NOTES below.",
@@ -375,8 +398,8 @@
       "   [[run:N]] opens project N and plays its architecture flow. Use it when asked how something works or to show a flow.",
       "   [[tech:NAME]] filters the project list by a technology. Valid names: " + allTech().join(", ") + ".",
       "",
-      "NOTES",
-      knowledge()
+      focus ? "NOTES (full detail for the projects most relevant to this question, brief for the rest; if the visitor needs detail on a brief one, answer from what is here and invite a follow-up question about it)" : "NOTES",
+      knowledge(focus)
     ].join("\n");
   }
 
@@ -388,6 +411,7 @@
     notes: notes,
     allTech: allTech,
     knowledge: knowledge,
+    pick: pick,
     systemPrompt: systemPrompt
   };
 });

@@ -10,11 +10,9 @@ Static page plus one serverless function for the agent.
 
 1. Put this folder in a GitHub repository.
 2. On vercel.com choose Add New > Project and import the repository. No build settings needed.
-3. In Project Settings > Environment Variables add ONE of:
-   - `ANTHROPIC_API_KEY` (optionally `LLM_MODEL`)
-   - or `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL` for any OpenAI-compatible provider
-     (several offer a free tier). `LLM_BASE_URL` is the provider's base URL that ends
-     before `/chat/completions`.
+3. In Project Settings > Environment Variables add `LLM_API_KEY` with a Groq API key
+   (free tier). Optional: `LLM_MODEL` and `LLM_BASE_URL` to use another model or any
+   OpenAI-compatible provider, or `ANTHROPIC_API_KEY` to use Anthropic instead.
 4. Redeploy. The chat header shows "Live model" once the endpoint answers.
 
 Without a key the site still works: the chat falls back to a keyword lookup and says so.

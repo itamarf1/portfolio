@@ -1,11 +1,15 @@
 /* Serverless agent endpoint (Vercel Node function).
    The API key stays here on the server; the browser only sends the conversation.
 
-   Configure ONE of these in the host's environment variables:
-   A) Anthropic:           ANTHROPIC_API_KEY   (optional LLM_MODEL)
-   B) Any OpenAI-compatible provider (many have a free tier):
-                           LLM_API_KEY, LLM_BASE_URL, LLM_MODEL
+   Only ONE environment variable is required on the host:
+     LLM_API_KEY          a Groq API key (free tier, no card)
+   Optional overrides:
+     LLM_BASE_URL         any OpenAI-compatible base URL (default: Groq)
+     LLM_MODEL            model id (default below)
+     ANTHROPIC_API_KEY    use Anthropic instead of LLM_API_KEY
 */
+const DEFAULT_BASE_URL = "https://api.groq.com/openai/v1";
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 const KB = require("../kb.js");
 
 const WINDOW_MS = 10 * 60 * 1000;
@@ -59,7 +63,7 @@ async function callAnthropic(system, messages) {
 }
 
 async function callOpenAICompatible(system, messages) {
-  const base = process.env.LLM_BASE_URL.replace(/\/+$/, "");
+  const base = (process.env.LLM_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, "");
   const r = await fetch(base + "/chat/completions", {
     method: "POST",
     headers: {
@@ -67,11 +71,12 @@ async function callOpenAICompatible(system, messages) {
       authorization: "Bearer " + process.env.LLM_API_KEY
     },
     body: JSON.stringify({
-      model: process.env.LLM_MODEL,
+      model: process.env.LLM_MODEL || DEFAULT_MODEL,
       max_tokens: 500,
       messages: [{ role: "system", content: system }].concat(messages)
     })
   });
+  if (r.status === 429) { const e = new Error("upstream rate limit"); e.busy = true; throw e; }
   if (!r.ok) throw new Error("llm " + r.status + " " + (await r.text()).slice(0, 200));
   const data = await r.json();
   return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "";
@@ -88,15 +93,18 @@ module.exports = async function handler(req, res) {
   const messages = clean(body && body.messages);
   if (!messages.length) return res.status(400).json({ error: "no_question" });
 
-  const system = KB.systemPrompt();
+  // Full notes only for the projects this question is about; one-line briefs for the rest.
+  const recent = messages.filter(m => m.role === "user").slice(-2).map(m => m.content).join(" ");
+  const system = KB.systemPrompt(KB.pick(recent, 2));
   try {
     let text;
     if (process.env.ANTHROPIC_API_KEY) text = await callAnthropic(system, messages);
-    else if (process.env.LLM_API_KEY && process.env.LLM_BASE_URL && process.env.LLM_MODEL) text = await callOpenAICompatible(system, messages);
+    else if (process.env.LLM_API_KEY) text = await callOpenAICompatible(system, messages);
     else return res.status(503).json({ error: "not_configured" });
     return res.status(200).json({ text });
   } catch (err) {
     console.error(err);
+    if (err.busy) return res.status(429).json({ error: "busy" });
     return res.status(502).json({ error: "model_error" });
   }
 };
