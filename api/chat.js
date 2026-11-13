@@ -106,6 +106,12 @@ module.exports = async function handler(req, res) {
     if (process.env.ANTHROPIC_API_KEY) text = await callAnthropic(system, messages);
     else if (process.env.LLM_API_KEY) text = await callOpenAICompatible(system, messages);
     else return res.status(503).json({ error: "not_configured" });
+    // Questions the notes could not answer: logged (no IP, no identity) so the notes can be extended.
+    if (/\[\[gap\]\]/.test(text)) {
+      const q = messages.filter(m => m.role === "user").slice(-1)[0];
+      console.log(JSON.stringify({ unanswered: true, project: current, question: q ? q.content.slice(0, 300) : "" }));
+      text = text.replace(/\s*\[\[gap\]\]\s*/g, "").trim();
+    }
     return res.status(200).json({ text });
   } catch (err) {
     console.error(err);

@@ -398,7 +398,8 @@
       "6. You can operate the page. When it helps, end your reply with at most one tag on its own line:",
       "   [[open:N]] opens project N (1 to 7). Use it when the answer centers on one project.",
       "   [[run:N]] opens project N and plays its architecture flow. Use it when asked how something works or to show a flow.",
-      cur ? "7. The visitor currently has project " + cur.id + " (" + cur.title + ") open on the page. A question that does not name or clearly point to another project, such as 'his role', 'why was it needed' or 'the key trade-off', is about project " + cur.id + ". Switch to another project only when the visitor clearly names it." : "",
+      "7. If the notes do not cover the question (after any reasonable inference), also end your reply with the tag [[gap]] on its own line. It is invisible to the visitor and lets Itamar see which questions the notes are missing.",
+      cur ? "8. The visitor currently has project " + cur.id + " (" + cur.title + ") open on the page. A question that does not name or clearly point to another project, such as 'his role', 'why was it needed' or 'the key trade-off', is about project " + cur.id + ". Switch to another project only when the visitor clearly names it." : "",
       "",
       focus ? "NOTES (full detail for the projects most relevant to this question, brief for the rest; if the visitor needs detail on a brief one, answer from what is here and invite a follow-up question about it)" : "NOTES",
       knowledge(focus)
