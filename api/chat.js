@@ -95,7 +95,12 @@ module.exports = async function handler(req, res) {
 
   // Full notes only for the projects this question is about; one-line briefs for the rest.
   const recent = messages.filter(m => m.role === "user").slice(-2).map(m => m.content).join(" ");
-  const system = KB.systemPrompt(KB.pick(recent, 2));
+  // The project the visitor has open on the page: it always gets full notes and anchors vague questions.
+  const cur = Number(body && body.current);
+  const current = Number.isInteger(cur) && cur >= 1 && cur <= 99 ? cur : null;
+  let focus = KB.pick(recent, 2);
+  if (current && focus.indexOf(current) < 0) focus = [current].concat(focus);
+  const system = KB.systemPrompt(focus, current);
   try {
     let text;
     if (process.env.ANTHROPIC_API_KEY) text = await callAnthropic(system, messages);

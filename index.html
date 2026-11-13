@@ -732,7 +732,7 @@ body{transition:padding-right .2s}
 
   /* Fallback when no model is reachable: plain keyword lookup in the same notes. */
   function localAnswer(q){
-    var ids=P.pick(q,1), best=ids.length?byId(ids[0]):null;
+    var ids=P.pick(q,1); if(!ids.length&&state.current) ids=[state.current]; var best=ids.length?byId(ids[0]):null;
     var pre="The live model isn't connected here, so this is a plain lookup in the project notes.\n\n";
     if(!best) return pre+"I couldn't match that to a project. Try naming a technology or a project, for example Kubernetes, the ledger or the sandbox.";
     var ql=q.toLowerCase(), body;
@@ -749,13 +749,13 @@ body{transition:padding-right .2s}
     if(sample){
       try{
         var msgs=history.map(function(m){ return {role:m.role, content:m.content}; });
-        msgs[0]={role:"user", content:P.systemPrompt()+"\n\n----\nThe conversation with the visitor starts here.\n\n"+msgs[0].content};
+        msgs[0]={role:"user", content:P.systemPrompt(undefined, state.current)+"\n\n----\nThe conversation with the visitor starts here.\n\n"+msgs[0].content};
         var r=await sample(msgs,{ onText:function(e){ onText(e.text); }, cache:false, modelTier:"quick" });
         setMode("Live model"); return r.text;
       }catch(e){ setMode("Offline lookup"); }
     } else if(!endpointDown){
       try{
-        var res=await fetch(CHAT_ENDPOINT,{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({messages:history.slice(-12)}) });
+        var res=await fetch(CHAT_ENDPOINT,{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({messages:history.slice(-12), current:state.current||null}) });
         if(res.status===429){ return "The agent is busy right now. Give it a minute and ask again."; }
         if(!res.ok) throw new Error("endpoint "+res.status);
         var data=await res.json(); setMode("Live model"); return String(data.text||"");
